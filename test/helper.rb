@@ -12,7 +12,6 @@ require 'shoulda'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
-require 'rugroupy-server'
+require 'rugroupy/server'
+require 'httparty'
 
-class Test::Unit::TestCase
-end

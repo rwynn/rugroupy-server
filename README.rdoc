@@ -1,6 +1,29 @@
 = rugroupy-server
 
-Description goes here.
+rugroupy-server is a sinatra based server allowing one to interact with the rugroupy library
+over http.
+
+== features
+ * requests and responses use JSON
+ * GET, PUT, DELETE /entity to retrieve, create, or delete entities
+ * PUT, DELETE /entity/tags to tag or untag entities
+ * GET /entity/similiar to find entities similiar to a given entity sorted by score
+ * GET, POST /group to retrieve most similiar entities or initiate a grouping request
+
+== Examples
+
+See http://github.com/rwynn/rugroupy-server/tree/master/test
+
+== Requirements
+
+* rubgroupy http://github.com/rwynn/rugroupy
+* sinatra https://github.com/sinatra/sinatra/
+* sinatra-mongo https://github.com/technicalpickles/sinatra-mongo
+* JSON https://github.com/flori/json
+
+== Install
+
+* sudo gem install rugroupy-server
 
 == Contributing to rugroupy-server
  

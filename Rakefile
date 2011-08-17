@@ -17,10 +17,11 @@ Jeweler::Tasks.new do |gem|
   gem.name = "rugroupy-server"
   gem.homepage = "http://github.com/rwynn/rugroupy-server"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{an http interface to rugroupy}
+  gem.description = %Q{a sinatra based server which enables a http interface to rugroupy}
   gem.email = "ryan.m.wynn@gmail.com"
   gem.authors = ["Ryan Wynn"]
+  gem.files = FileList['lib/**/*.rb'].to_a
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
