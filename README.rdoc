@@ -14,13 +14,13 @@ over http.
 
 Extend Groupy::GroupyServer to configure mongo and other settings and then run it
 
-require 'rugroupy/server'
-class MyApp < Groupy::GroupyServer 
-  register Sinatra::MongoExtension
-  set :mongo, 'mongo://localhost:27017/mongo_database_name'
-  # optionally set more things (port, etc.) according to http://www.sinatrarb.com/configuration.html
-end
-MyApp.run!
+  require 'rugroupy/server'
+  class MyApp < Groupy::GroupyServer 
+    register Sinatra::MongoExtension
+    set :mongo, 'mongo://localhost:27017/mongo_database_name'
+    # optionally set more things (port, etc.) according to http://www.sinatrarb.com/configuration.html
+  end
+  MyApp.run!
 
 == Examples
 
