@@ -3,16 +3,28 @@
 rugroupy-server is a sinatra based server allowing one to interact with the rugroupy library
 over http.
 
-== features
+== Features
  * requests and responses use JSON
  * GET, PUT, DELETE /entity to retrieve, create, or delete entities
  * PUT, DELETE /entity/tags to tag or untag entities
  * GET /entity/similiar to find entities similiar to a given entity sorted by score
  * GET, POST /group to retrieve most similiar entities or initiate a grouping request
 
+== Usage
+
+Extend Groupy::GroupyServer to configure mongo and other settings and then run it
+
+require 'rugroupy/server'
+class MyApp < Groupy::GroupyServer 
+  register Sinatra::MongoExtension
+  set :mongo, 'mongo://localhost:27017/mongo_database_name'
+  # optionally set more things (port, etc.) according to http://www.sinatrarb.com/configuration.html
+end
+MyApp.run!
+
 == Examples
 
-See http://github.com/rwynn/rugroupy-server/tree/master/test
+See http://github.com/rwynn/rugroupy-server/tree/master/test for example input/output to and from the server
 
 == Requirements
 
