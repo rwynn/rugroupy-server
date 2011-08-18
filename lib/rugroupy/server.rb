@@ -4,7 +4,15 @@ require 'sinatra/mongo'
 require 'rugroupy'
 require 'json'
 
-module ApplicationHelper
+# Run the server like this by extending GroupyServer and calling run!
+# require 'rugroupy/server'
+# class MyApp < GroupyServer 
+#   register Sinatra::MongoExtension
+#   set :mongo, 'mongo://localhost:27017/test'
+# end
+# MyApp.run!
+
+module GroupyServerSupport
   
   def get_entity(params, create=false)
     e_json = self.get_entity_json(params)
@@ -54,11 +62,10 @@ module ApplicationHelper
   
 end
 
-class Application < Sinatra::Base
-  include ApplicationHelper
-  register Sinatra::MongoExtension
-  set :app_file, __FILE__
-  set :mongo, 'mongo://localhost:27017/test'
+class GroupyServer < Sinatra::Base
+  include GroupyServerSupport
+  #register Sinatra::MongoExtension
+  #set :mongo, 'mongo://localhost:27017/test'
   
   before do 
     headers "Content-Type"   => "application/json; charset=UTF-8"
@@ -116,6 +123,4 @@ class Application < Sinatra::Base
       :result => self.similiar_entities(params)]
     JSON.generate(response)
   end
-  
-  run! if app_file == $0
 end
