@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rugroupy-server}
-  s.version = "0.1.1"
+  s.version = "0.1.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = [%q{Ryan Wynn}]
-  s.date = %q{2011-08-18}
+  s.date = %q{2011-08-22}
   s.description = %q{a sinatra based server which enables a http interface to rugroupy}
   s.email = %q{ryan.m.wynn@gmail.com}
   s.extra_rdoc_files = [
@@ -30,48 +30,48 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
+      s.add_runtime_dependency(%q<sinatra>, [">= 1.2.6"])
+      s.add_runtime_dependency(%q<sinatra-mongo>, [">= 0.1.0"])
+      s.add_runtime_dependency(%q<json>, [">= 1.5.3"])
+      s.add_runtime_dependency(%q<rugroupy>, [">= 0.1.0"])
+      s.add_runtime_dependency(%q<mongo>, [">= 1.3.1"])
+      s.add_runtime_dependency(%q<bson>, [">= 1.3.1"])
+      s.add_runtime_dependency(%q<bson_ext>, [">= 1.3.1"])
+      s.add_runtime_dependency(%q<SystemTimer>, [">= 1.2.3"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.6.4"])
       s.add_development_dependency(%q<rcov>, [">= 0"])
-      s.add_development_dependency(%q<sinatra>, [">= 1.2.6"])
-      s.add_development_dependency(%q<sinatra-mongo>, [">= 0.1.0"])
-      s.add_development_dependency(%q<json>, [">= 1.5.3"])
       s.add_development_dependency(%q<httparty>, [">= 0.7.8"])
-      s.add_development_dependency(%q<rugroupy>, [">= 0.1.0"])
-      s.add_development_dependency(%q<mongo>, [">= 1.3.1"])
-      s.add_development_dependency(%q<bson>, [">= 1.3.1"])
-      s.add_development_dependency(%q<bson_ext>, [">= 1.3.1"])
-      s.add_development_dependency(%q<SystemTimer>, [">= 1.2.3"])
     else
-      s.add_dependency(%q<shoulda>, [">= 0"])
-      s.add_dependency(%q<bundler>, ["~> 1.0.0"])
-      s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
-      s.add_dependency(%q<rcov>, [">= 0"])
       s.add_dependency(%q<sinatra>, [">= 1.2.6"])
       s.add_dependency(%q<sinatra-mongo>, [">= 0.1.0"])
       s.add_dependency(%q<json>, [">= 1.5.3"])
-      s.add_dependency(%q<httparty>, [">= 0.7.8"])
       s.add_dependency(%q<rugroupy>, [">= 0.1.0"])
       s.add_dependency(%q<mongo>, [">= 1.3.1"])
       s.add_dependency(%q<bson>, [">= 1.3.1"])
       s.add_dependency(%q<bson_ext>, [">= 1.3.1"])
       s.add_dependency(%q<SystemTimer>, [">= 1.2.3"])
+      s.add_dependency(%q<shoulda>, [">= 0"])
+      s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
+      s.add_dependency(%q<rcov>, [">= 0"])
+      s.add_dependency(%q<httparty>, [">= 0.7.8"])
     end
   else
-    s.add_dependency(%q<shoulda>, [">= 0"])
-    s.add_dependency(%q<bundler>, ["~> 1.0.0"])
-    s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
-    s.add_dependency(%q<rcov>, [">= 0"])
     s.add_dependency(%q<sinatra>, [">= 1.2.6"])
     s.add_dependency(%q<sinatra-mongo>, [">= 0.1.0"])
     s.add_dependency(%q<json>, [">= 1.5.3"])
-    s.add_dependency(%q<httparty>, [">= 0.7.8"])
     s.add_dependency(%q<rugroupy>, [">= 0.1.0"])
     s.add_dependency(%q<mongo>, [">= 1.3.1"])
     s.add_dependency(%q<bson>, [">= 1.3.1"])
     s.add_dependency(%q<bson_ext>, [">= 1.3.1"])
     s.add_dependency(%q<SystemTimer>, [">= 1.2.3"])
+    s.add_dependency(%q<shoulda>, [">= 0"])
+    s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+    s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
+    s.add_dependency(%q<rcov>, [">= 0"])
+    s.add_dependency(%q<httparty>, [">= 0.7.8"])
   end
 end
 
