@@ -37,6 +37,15 @@ See http://github.com/rwynn/rugroupy-server/tree/master/test for example input/o
 
 * sudo gem install rugroupy-server
 
+== Install from the GitHub source
+
+The source code is available at http://github.com/rwynn/rugroupy-server.
+You can either clone the git repository or download a tarball or zip file.
+Once you have the source, you can use it from wherever you downloaded it or
+you can install it as a gem from the source by typing
+
+* sudo rake install
+
 == Contributing to rugroupy-server
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
