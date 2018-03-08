@@ -7,8 +7,8 @@ require 'json'
 # Run the server like this by extending GroupyServer and calling run!
 # require 'rugroupy/server'
 # class MyApp < Groupy::GroupyServer
-#   register Groupy::MongoExtension
-#   set :mongo, 'mongo://localhost:27017/test'
+#   register Sinatra::MongoExtension
+#   set :mongo, 'mongodb://localhost:27017/test'
 #   optionally set more things (port, etc.) according to http://www.sinatrarb.com/configuration.html
 # end
 # MyApp.run!

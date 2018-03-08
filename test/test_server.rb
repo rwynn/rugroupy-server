@@ -11,8 +11,7 @@ module TestHelpers
   end
 
   def assert_response_with_code(response, code)
-    puts response.body
-    assert response != nil
+    assert !response.nil?
     assert_equal code, response.code
     assert_content_type_json(response)
   end
@@ -135,7 +134,7 @@ class TestServer < MiniTest::Test
         # test similiarity across all
         results = get_similiar
 
-        assert results != nil
+        assert !results.nil?
         assert_equal 1, results.size
         assert results[0].member?('user1')
         assert results[0].member?('user3')
@@ -159,7 +158,7 @@ class TestServer < MiniTest::Test
         # test similiarity to specific entity
         results = get_similiar_to('user3')
 
-        assert results != nil
+        assert !results.nil?
         assert_equal 1, results.size
         assert results.member?('user1')
       end
@@ -183,7 +182,7 @@ class TestServer < MiniTest::Test
         # test similiarity to specific entity
         results = get_similiar_to('user2')
 
-        assert results != nil
+        assert !results.nil?
         assert_equal 2, results.size
         assert_equal 'user3', results[0]
         assert_equal 'user1', results[1]
@@ -208,7 +207,7 @@ class TestServer < MiniTest::Test
         # test similiarity to specific entity
         results = get_similiar_to('user2')
 
-        assert results != nil
+        assert !results.nil?
         assert_equal 2, results.size
         assert_equal 'user1', results[0]
         assert_equal 'user3', results[1]
@@ -242,7 +241,7 @@ class TestServer < MiniTest::Test
         # test similiarity to specific entity
         results = get_similiar_to('user1')
 
-        assert results != nil
+        assert !results.nil?
         assert_equal 2, results.size
         assert_equal 'user3', results[0]
         assert_equal 'user2', results[1]

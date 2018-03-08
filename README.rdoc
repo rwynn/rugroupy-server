@@ -17,7 +17,7 @@ Extend Groupy::GroupyServer to configure mongo and other settings and then run i
   require 'rugroupy/server'
   class MyApp < Groupy::GroupyServer 
     register Sinatra::MongoExtension
-    set :mongo, 'mongo://localhost:27017/mongo_database_name'
+    set :mongo, 'mongodb://localhost:27017/mongo_database_name'
     # optionally set more things (port, etc.) according to http://www.sinatrarb.com/configuration.html
   end
   MyApp.run!
@@ -30,7 +30,6 @@ See http://github.com/rwynn/rugroupy-server/tree/master/test for example input/o
 
 * rubgroupy http://github.com/rwynn/rugroupy
 * sinatra https://github.com/sinatra/sinatra/
-* sinatra-mongo https://github.com/technicalpickles/sinatra-mongo
 * JSON https://github.com/flori/json
 
 == Install
