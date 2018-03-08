@@ -7,30 +7,31 @@ end
 
 module TestHelpers
   def assert_content_type_json(response)
-    assert_equal "application/json; charset=UTF-8", response.headers["Content-Type"]
+    assert_equal 'application/json; charset=UTF-8', response.headers['Content-Type']
   end
-  
+
   def assert_response_with_code(response, code)
-    assert_not_nil response
+    puts response.body
+    assert response != nil
     assert_equal code, response.code
     assert_content_type_json(response)
   end
 
   def create_entity(entity_id)
-    json = JSON.generate({:name => "users", :id => entity_id})
-    response = GroupServer.put("/entity", {:body => {:entity => json }})
-    self.assert_response_with_code(response, 201)
+    json = JSON.generate(name: 'users', id: entity_id)
+    response = GroupServer.put('/entity', body: { entity: json })
+    assert_response_with_code(response, 201)
     response_body_json = JSON.parse(response.body)
-    assert response_body_json["success"]
+    assert response_body_json['success']
   end
 
   def tag_entity(entity_id, tags)
-    json = JSON.generate({:name => "users", :id => entity_id, :tags => tags })
-    response = GroupServer.put("/entity/tags", {:body => {:entity => json }})
-    self.assert_response_with_code(response, 200)
+    json = JSON.generate(name: 'users', id: entity_id, tags: tags)
+    response = GroupServer.put('/entity/tags', body: { entity: json })
+    assert_response_with_code(response, 200)
     response_body_json = JSON.parse(response.body)
-    assert response_body_json["success"]
-    response_tags = response_body_json["entity"]["tags"]
+    assert response_body_json['success']
+    response_tags = response_body_json['entity']['tags']
     tags.each_pair do |name, value|
       if value.is_a?(String)
         assert response_tags[name.to_s].member?(value)
@@ -43,12 +44,12 @@ module TestHelpers
   end
 
   def untag_entity(entity_id, tags)
-    json = JSON.generate({:name => "users", :id => entity_id, :tags => tags })
-    response = GroupServer.delete("/entity/tags", {:body => {:entity => json }})
-    self.assert_response_with_code(response, 200)
+    json = JSON.generate(name: 'users', id: entity_id, tags: tags)
+    response = GroupServer.delete('/entity/tags', body: { entity: json })
+    assert_response_with_code(response, 200)
     response_body_json = JSON.parse(response.body)
-    assert response_body_json["success"]
-    response_tags = response_body_json["entity"]["tags"]
+    assert response_body_json['success']
+    response_tags = response_body_json['entity']['tags']
     tags.each_pair do |name, value|
       if value.is_a?(String)
         assert response_tags[name.to_s].member?(value) == false
@@ -60,148 +61,162 @@ module TestHelpers
     end
   end
 
-  def group_entities(options={})
-    options[:name] = "users"
+  def group_entities(options = {})
+    options[:name] = 'users'
     json = JSON.generate(options)
-    response = GroupServer.post("/group", {:body => {:entity => json }})
-    self.assert_response_with_code(response, 200)
+    response = GroupServer.post('/group', body: { entity: json })
+    assert_response_with_code(response, 200)
     response_body_json = JSON.parse(response.body)
-    assert response_body_json["success"]
+    assert response_body_json['success']
   end
 
   def get_similiar
-    json = JSON.generate({:name => "users"})
-    response = GroupServer.get("/group", {:body => {:entity => json }})
-    self.assert_response_with_code(response, 200)
+    json = JSON.generate(name: 'users')
+    response = GroupServer.get('/group', body: { entity: json })
+    assert_response_with_code(response, 200)
     response_body_json = JSON.parse(response.body)
-    assert response_body_json["success"]
-    response_body_json["results"]
+    assert response_body_json['success']
+    response_body_json['results']
   end
 
   def get_similiar_to(entity_id)
-    json = JSON.generate({:name => "users", :id => entity_id })
-    response = GroupServer.get("/entity/similiar", {:body => {:entity => json }})
-    self.assert_response_with_code(response, 200)
+    json = JSON.generate(name: 'users', id: entity_id)
+    response = GroupServer.get('/entity/similiar', body: { entity: json })
+    assert_response_with_code(response, 200)
     response_body_json = JSON.parse(response.body)
-    assert response_body_json["success"]
-    response_body_json["results"]
+    assert response_body_json['success']
+    response_body_json['results']
   end
 end
 
-class TestServer < Test::Unit::TestCase
-  include TestHelpers
-  context "a groupy server" do
-      setup do
-        @database_name = "test"
-        @connection =  Mongo::Connection.new
-        @entity_name = "users"
-        @user_json = JSON.generate({:name => "users", :id => "user1"})
-        @user_json_tagged = JSON.generate({:name => "users", :id => "user1", :tags => { :likes => "mongodb"}})
-        @entity_ids = %w{user1 user2 user3 user4}
-        @entities = @entity_ids.collect do |n|
-          Groupy::Entity.new(@connection[@database_name], @entity_name, n, false)
-        end
-      end
+module Minitest
+  class Test
+    include TestHelpers
+  end
+end
 
-      teardown do
-        @connection[@database_name][@entity_name].drop()
-        @connection[@database_name]["#{@entity_name}_invert"].drop()
-        @connection[@database_name]["#{@entity_name}_count"].drop()
-        @connection.drop_database(@database_name)
-        @connection.close
+class TestServer < MiniTest::Test
+  describe 'a groupy server' do
+    before do
+      @database_name = 'test'
+      @connection =  Mongo::Client.new('mongodb://localhost')
+      @database = Mongo::Database.new(@connection, @database_name)
+      @entity_name = 'users'
+      @user_json = JSON.generate(name: 'users', id: 'user1')
+      @user_json_tagged = JSON.generate(name: 'users', id: 'user1', tags: { likes: 'mongodb' })
+      @entity_ids = %w[user1 user2 user3 user4]
+      @entities = @entity_ids.collect do |n|
+        Groupy::Entity.new(@database, @entity_name, n, false)
       end
+    end
 
-      should "find similiar entities" do
+    after do
+      @database[@entity_name].drop
+      @database["#{@entity_name}_invert"].drop
+      @database["#{@entity_name}_count"].drop
+      @database.drop
+      @connection.close
+    end
+
+    describe 'find similiar entities' do
+      it do
         # create some entities
-        self.create_entity("user1")
-        self.create_entity("user2")
-        self.create_entity("user3")
+        create_entity('user1')
+        create_entity('user2')
+        create_entity('user3')
 
         # apply some tags
-        self.tag_entity("user1", {:likes => "mongodb" })
-        self.tag_entity("user2", {:likes => "apache" })
-        self.tag_entity("user3", {:likes => "mongodb" })
+        tag_entity('user1', likes: 'mongodb')
+        tag_entity('user2', likes: 'apache')
+        tag_entity('user3', likes: 'mongodb')
 
-        self.group_entities
+        group_entities
 
         # test similiarity across all
-        results = self.get_similiar
+        results = get_similiar
 
-        assert_not_nil results
+        assert results != nil
         assert_equal 1, results.size
-        assert results[0].member?("user1")
-        assert results[0].member?("user3")
+        assert results[0].member?('user1')
+        assert results[0].member?('user3')
       end
+    end
 
-      should "find entities similiar to a specific entity" do
+    describe 'find entities similiar to a specific entity' do
+      it do
         # create some entities
-        self.create_entity("user1")
-        self.create_entity("user2")
-        self.create_entity("user3")
+        create_entity('user1')
+        create_entity('user2')
+        create_entity('user3')
 
         # apply some tags
-        self.tag_entity("user1", {:likes => "mongodb" })
-        self.tag_entity("user2", {:likes => "apache" })
-        self.tag_entity("user3", {:likes => "mongodb" })
+        tag_entity('user1', likes: 'mongodb')
+        tag_entity('user2', likes: 'apache')
+        tag_entity('user3', likes: 'mongodb')
 
-        self.group_entities
+        group_entities
 
         # test similiarity to specific entity
-        results = self.get_similiar_to("user3")
+        results = get_similiar_to('user3')
 
-        assert_not_nil results
+        assert results != nil
         assert_equal 1, results.size
-        assert results.member?("user1")
+        assert results.member?('user1')
       end
+    end
 
-
-      should "group entitites with custom scoring" do
+    describe 'group entitites with custom scoring' do
+      it do
         # create some entities
-        self.create_entity("user1")
-        self.create_entity("user2")
-        self.create_entity("user3")
+        create_entity('user1')
+        create_entity('user2')
+        create_entity('user3')
 
         # apply some tags
-        self.tag_entity("user1", {:likes => ["x", "y", "z"], :wants => ["a"] })
-        self.tag_entity("user2", {:likes => ["x", "z"], :wants => ["a", "b", "c"] })
-        self.tag_entity("user3", {:likes => ["x"], :wants => ["b", "c"] })
+        tag_entity('user1', likes: %w[x y z], wants: ['a'])
+        tag_entity('user2', likes: %w[x z], wants: %w[a b c])
+        tag_entity('user3', likes: ['x'], wants: %w[b c])
 
         # group entities with a custom score function
-        self.group_entities(:score_function => "function(tag) { if (tag == 'wants') return 3; else return 1; }")
+        group_entities(score_function: "function(tag) { if (tag == 'wants') return 3; else return 1; }")
 
         # test similiarity to specific entity
-        results = self.get_similiar_to("user2")
+        results = get_similiar_to('user2')
 
-        assert_not_nil results
+        assert results != nil
         assert_equal 2, results.size
-        assert_equal "user3", results[0]
-        assert_equal "user1", results[1]
+        assert_equal 'user3', results[0]
+        assert_equal 'user1', results[1]
       end
+    end
 
-      should "group entities with custom tag inclusion" do
+    describe 'group entities with custom tag inclusion' do
+      it do
         # create some entities
-        self.create_entity("user1")
-        self.create_entity("user2")
-        self.create_entity("user3")
+        create_entity('user1')
+        create_entity('user2')
+        create_entity('user3')
 
         # apply some tags
-        self.tag_entity("user1", {:likes => ["x", "y", "z"], :wants => ["a"] })
-        self.tag_entity("user2", {:likes => ["x", "z"], :wants => ["a", "b", "c"] })
-        self.tag_entity("user3", {:likes => ["x"], :wants => ["b", "c"] })
+        tag_entity('user1', likes: %w[x y z], wants: ['a'])
+        tag_entity('user2', likes: %w[x z], wants: %w[a b c])
+        tag_entity('user3', likes: ['x'], wants: %w[b c])
 
         # group entities with a custom include function
-        self.group_entities(:include_function => "function(tag) { return (tag == 'likes'); }")
+        group_entities(include_function: "function(tag) { return (tag == 'likes'); }")
 
         # test similiarity to specific entity
-        results = self.get_similiar_to("user2")
+        results = get_similiar_to('user2')
 
-        assert_not_nil results
+        assert results != nil
         assert_equal 2, results.size
-        assert_equal "user1", results[0]
-        assert_equal "user3", results[1]
+        assert_equal 'user1', results[0]
+        assert_equal 'user3', results[1]
       end
+    end
 
-      should "group entities with dynamically generated tags" do
+    describe 'group entities with dynamically generated tags' do
+      it do
         dynamicTagFunction = <<-EOF
          function (doc) {
            doc_id = doc._id;
@@ -209,79 +224,91 @@ class TestServer < Test::Unit::TestCase
              if (tag == 'zipcode') {
                doc.tags[tag].forEach(function(a) {
                    if (parseInt(a) >= 22204 && parseInt(a) <= 22207) {
-                       emit({tag:"arlington", value:true}, {entities: [doc_id]}); 
+                       emit({tag:"arlington", value:true}, {entities: [doc_id]});
                    }
                });
              }
            }
          }
-EOF
+        EOF
         # apply some tags
-        self.tag_entity("user1", {:likes => ["x"], :wants => ["a"], :zipcode => ["22207"] })
-        self.tag_entity("user2", {:likes => ["x"], :wants => ["a"], :zipcode => ["90210"] })
-        self.tag_entity("user3", {:likes => ["x"], :wants => ["a"], :zipcode => ["22204"] })
+        tag_entity('user1', likes: ['x'], wants: ['a'], zipcode: ['22207'])
+        tag_entity('user2', likes: ['x'], wants: ['a'], zipcode: ['90210'])
+        tag_entity('user3', likes: ['x'], wants: ['a'], zipcode: ['22204'])
 
         # group entities with a dynamic tag function
-        self.group_entities(:dynamic_tag_function => dynamicTagFunction)
+        group_entities(dynamic_tag_function: dynamicTagFunction)
 
         # test similiarity to specific entity
-        results = self.get_similiar_to("user1")
+        results = get_similiar_to('user1')
 
-        assert_not_nil results
+        assert results != nil
         assert_equal 2, results.size
-        assert_equal "user3", results[0]
-        assert_equal "user2", results[1]
+        assert_equal 'user3', results[0]
+        assert_equal 'user2', results[1]
       end
+    end
 
-      should "delete entities" do
+    describe 'delete entities' do
+      it do
         # create an entity
-        self.create_entity("user1")
-        response = GroupServer.delete("/entity", {:body => {:entity => @user_json }})
-        self.assert_response_with_code(response, 200)
+        create_entity('user1')
+        response = GroupServer.delete('/entity', body: { entity: @user_json })
+        assert_response_with_code(response, 200)
         response_body_json = JSON.parse(response.body)
-        assert response_body_json["success"]
-        assert_nil @entities[0].get()
+        assert response_body_json['success']
+        assert_nil @entities[0].get
       end
+    end
 
-      should "retrieve entities" do
+    describe 'retrieve entities' do
+      it do
         # create an entity
-        self.create_entity("user1")
+        create_entity('user1')
         # retrieve that entity
-        response = GroupServer.get("/entity", {:body => {:entity => @user_json }})
-        self.assert_response_with_code(response, 200)
+        response = GroupServer.get('/entity', body: { entity: @user_json })
+        assert_response_with_code(response, 200)
         response_body_json = JSON.parse(response.body)
-        assert response_body_json["success"]
-        assert_equal "user1", response_body_json["entity"]["_id"]
+        assert response_body_json['success']
+        assert_equal 'user1', response_body_json['entity']['_id']
       end
+    end
 
-      should "respond to missing entities" do
+    describe 'respond to missing entities' do
+      it do
         # retrieve an entity that does not exist
-        response = GroupServer.get("/entity", {:body => {:entity => @user_json }})
-        self.assert_response_with_code(response, 404)
+        response = GroupServer.get('/entity', body: { entity: @user_json })
+        assert_response_with_code(response, 404)
         response_body_json = JSON.parse(response.body)
-        assert response_body_json["success"] == false
+        assert response_body_json['success'] == false
       end
+    end
 
-      should "create entities" do
+    describe 'create entities' do
+      it do
         # create an entity
-        self.create_entity("user1")
+        create_entity('user1')
       end
+    end
 
-      should "tag entities" do
+    describe 'tag entities' do
+      it do
         # create an entity
-        self.create_entity("user1")
+        create_entity('user1')
         # apply an entity tag
-        self.tag_entity("user1", {:likes=>"mongodb"})
+        tag_entity('user1', likes: 'mongodb')
       end
+    end
 
-      should "untag entities" do
+    describe 'untag entities' do
+      it do
         # create an entity
-        self.create_entity("user1")
+        create_entity('user1')
         # apply an entity tag
-        self.tag_entity("user1", {:likes=>"mongodb"})
+        tag_entity('user1', likes: 'mongodb')
         # remove the entity tag
-        self.untag_entity("user1", {:likes=>"mongodb"})
+        untag_entity('user1', likes: 'mongodb')
       end
+    end
   end
-  
 end
