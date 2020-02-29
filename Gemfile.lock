@@ -61,7 +61,7 @@ GEM
     rack (1.6.12)
     rack-protection (1.5.5)
       rack
-    rake (12.3.0)
+    rake (13.0.1)
     rdoc (5.1.0)
     rugroupy (0.2.0)
       bson
